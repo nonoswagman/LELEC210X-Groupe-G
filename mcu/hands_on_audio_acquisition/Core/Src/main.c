@@ -38,7 +38,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define ADC_BUF_SIZE 256
+#define ADC_BUF_SIZE 30000
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -61,8 +61,8 @@ char hex_encoded_buffer[4*ADC_BUF_SIZE+1];
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 void hex_encode(char* s, const uint8_t* buf, size_t len);
-void print_buffer(uint16_t *buffer);
-uint32_t get_signal_power(uint16_t *buffer, size_t len);
+void print_buffer(volatile uint16_t *buffer);
+uint32_t get_signal_power(volatile uint16_t *buffer, size_t len);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -70,41 +70,43 @@ uint32_t get_signal_power(uint16_t *buffer, size_t len);
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	if (GPIO_Pin == B1_Pin)
 	{
+		state=0;
 		HAL_TIM_Base_Start(&htim3);
-		HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADCBuffer1, ADC_BUF_SIZE);
+		HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADCBuffer, 2*ADC_BUF_SIZE);
 	}
 }
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc)
 {
-	state=!state;
-	HAL_ADC_Stop_DMA(&hadc1);
-
-	if(signal_power > 50)
+	if(state) //Stop
 	{
+		printf("I have to stop !\n");
 		HAL_TIM_Base_Stop(&htim3);
 		HAL_ADC_Stop_DMA(&hadc1);
 		return;
 	}
 
-	const uint32t_* buffer_halves[2] = {(uint32_t *) ADCBuffer1, (uint32_t *) ADCBuffer2};
-
-	HAL_ADC_Start_DMA(&hadc1, buffer_halves[state], ADC_BUF_SIZE);
-
-	//	uint32_t signal_power;
-	signal_power=get_signal_power(buffer_halves[1-state], ADC_BUF_SIZE);
-
-	print_buffer(buffer_halves[1-state]);
+	if(get_signal_power( ADCData1, ADC_BUF_SIZE)<50)
+	{
+		state=1;
+	}
+	print_buffer(ADCData1);
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
-	//stop
-	HAL_TIM_Base_Stop(&htim3);
-	HAL_ADC_Stop_DMA(&hadc1);
+	if(state) //Stop
+	{
+		printf("I have to stop !\n");
+		HAL_TIM_Base_Stop(&htim3);
+		HAL_ADC_Stop_DMA(&hadc1);
+		return;
+	}
 
-	print_buffer(ADCBuffer);
-
-	state=0; //We are not sampling anymore
+	if(get_signal_power(ADCData2, ADC_BUF_SIZE)<50)
+	{
+		state=1;
+	}
+	print_buffer(ADCData2);
 }
 
 void hex_encode(char* s, const uint8_t* buf, size_t len) {
@@ -115,12 +117,12 @@ void hex_encode(char* s, const uint8_t* buf, size_t len) {
     }
 }
 
-void print_buffer(uint16_t *buffer) {
+void print_buffer(volatile uint16_t *buffer) {
 	hex_encode(hex_encoded_buffer, (uint8_t*)buffer, 2*ADC_BUF_SIZE);
 	printf("SND:HEX:%s\r\n", hex_encoded_buffer);
 }
 
-uint32_t get_signal_power(uint16_t *buffer, size_t len){
+uint32_t get_signal_power(volatile uint16_t *buffer, size_t len){
 	uint64_t sum = 0;
 	uint64_t sum2 = 0;
 	for (size_t i=0; i<len; i++) {
