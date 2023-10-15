@@ -48,12 +48,13 @@ def generate_audio(buf, file_name):
         
 if __name__ == '__main__':
     
-    argParser = argparse.ArgumentParser()
-    argParser.add_argument("-p", "--port", help="Port for serial communication")
-    args = argParser.parse_args()
+    # argParser = argparse.ArgumentParser()
+    # argParser.add_argument("-p", "--port", help="Port for serial communication")
+    # args = argParser.parse_args()
+    por="COM5"
     print('uart-reader launched...\n')
 
-    if args.port is None:
+    if por is None:
         print("No port specified, here is a list of serial communication port available")
         print("================")
         port = list(list_ports.comports())
@@ -65,7 +66,7 @@ if __name__ == '__main__':
     else:
     
         plt.figure(figsize=(10,5))
-        input_stream = reader(port=args.port)
+        input_stream = reader(port=por)
         msg_counter = 0
         
         for msg in input_stream:
@@ -75,14 +76,19 @@ if __name__ == '__main__':
             times = np.linspace(0, buffer_size-1, buffer_size)*1/FREQ_SAMPLING
             voltage_mV = msg*VDD/VAL_MAX_ADC*1e3
             
-            plt.plot(times, voltage_mV)
+            fig,ax=plt.subplots(1,2)
+            ax[0].plot(times, voltage_mV)
+            ax[1].plot(np.fft.fftfreq(len(voltage_mV),1/FREQ_SAMPLING),np.fft.fft(voltage_mV))
+            
             plt.title('Acquisition #{}'.format(msg_counter))
-            plt.xlabel('Time (s)')
-            plt.ylabel('Voltage (mV)')
-            plt.ylim([0,3300])
-            plt.draw()
-            plt.pause(0.001)
-            plt.cla()
+            #ax[0].xlabel('Time (s)')
+            #ax[0].ylabel('Voltage (mV)')
+            #ax[0].ylim([0,3300])
+            ax[0].draw()
+            ax[0].pause(0.001)
+            ax[0].cla()
+            
+            
             
             generate_audio(msg, 'acq-{}'.format(msg_counter))
             
