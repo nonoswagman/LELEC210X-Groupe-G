@@ -115,6 +115,7 @@ class Chain:
         :param y: The received signal, (N * R,).
         :return: The signal, after demodulation.
         """
+
         raise NotImplementedError
 
 
@@ -187,13 +188,19 @@ class BasicChain(Chain):
         # Group symbols together, in a matrix. Each row contains the R samples over one symbol period
         y = np.resize(y, (nb_syms, R))
 
-        # TO DO: generate the reference waveforms used for the correlation
-        # hint: look at what is done in modulate() in chain.py
+        df = self.freq_dev
+        T = 1/self.bit_rate
 
-        # TO DO: compute the correlations with the two reference waveforms (r0 and r1)
+        n = np.arange(0,R)
+        signal = np.zeros(nb_syms, dtype=int)
 
-        # TO DO: performs the decision based on r0 and r1
+        for k in range(nb_syms):
+            r1=np.sum(y[k]*np.exp(-1j*2*np.pi*df*n*T/R))
+            r0=np.sum(y[k]*np.exp(1j*2*np.pi*df*n*T/R))
 
-        bits_hat = np.zeros(nb_syms, dtype=int)  # Default value, all bits=0. TO CHANGE!
+            if abs(r1)>abs(r0):
+                signal[k]=1
+            else:
+                signal[k]=0
 
-        return bits_hat
+        return signal

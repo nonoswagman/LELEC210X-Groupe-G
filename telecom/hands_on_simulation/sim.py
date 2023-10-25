@@ -362,4 +362,7 @@ if __name__ == "__main__":
     from chain import BasicChain
 
     chain = BasicChain()
+    chain.bypass_cfo_estimation=True
+    chain.bypass_preamble_detect=False
+    chain.bypass_sto_estimation=True
     run_sim(chain)
