@@ -21,9 +21,10 @@ tex/*/*.fls
 tex/*/*.log
 tex/*/*.out
 tex/*/*.pdf
-tex/**.toc
+tex/*/*.toc
 tex/pdfs.zip
 _minted-*/
+tex/hands_on_wireless_simulation/modulate.py
 
 # FPGA
 
@@ -39,8 +40,8 @@ mcu/Release/
 mcu/.settings/
 mcu/*.launch
 
-poetry.lock
-
-*.toc
+# Telecom
 
 telecom/hands_on_simulation/test.csv
+telecom/hands_on_measurements/gr-fsk/build/
+telecom/hands_on_measurements/gr-fsk/apps/*.py

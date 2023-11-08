@@ -255,6 +255,7 @@ def run_sim(chain):
     ax.grid(True)
     ax.set_title("Average Bit Error Rate")
     ax.legend()
+    fig.savefig("SNR bypass.pdf")
 
     # add second axis
     bool_2_axis = True
@@ -290,6 +291,7 @@ def run_sim(chain):
     ax.grid(True)
     ax.set_title("Average Packet Error Rate")
     ax.legend()
+    fig.savefig("Packet_error.pdf")
 
     # add second axis
     bool_2_axis = True
@@ -326,6 +328,7 @@ def run_sim(chain):
     plt.ylabel("RMSE [-]")
     plt.xlabel("SNR [dB]")
     plt.grid()
+    plt.savefig("RMSE-CFO.pdf")
     plt.show()
 
     # RMSE STO
@@ -360,6 +363,7 @@ def run_sim(chain):
 
 if __name__ == "__main__":
     from chain import BasicChain
-
+    
     chain = BasicChain()
+    
     run_sim(chain)

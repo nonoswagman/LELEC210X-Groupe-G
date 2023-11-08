@@ -20,7 +20,7 @@ class Chain:
     preamble = PREAMBLE
     sync_word = SYNC_WORD
 
-    payload_len = 50  # Number of bits per packet
+    payload_len = 100  # Number of bits per packet
 
     ## Simulation parameters
     n_packets = 100  # Number of sent packets
@@ -86,7 +86,7 @@ class Chain:
         """
         raise NotImplementedError
 
-    bypass_cfo_estimation = False
+    bypass_cfo_estimation =False
 
     def cfo_estimation(self, y: np.array) -> float:
         """
@@ -115,6 +115,7 @@ class Chain:
         :param y: The received signal, (N * R,).
         :return: The signal, after demodulation.
         """
+
         raise NotImplementedError
 
 
@@ -123,7 +124,7 @@ class BasicChain(Chain):
 
     cfo_val, sto_val = np.nan, np.nan  # CFO and STO are random
 
-    bypass_preamble_detect = True
+    bypass_preamble_detect = False
 
     def preamble_detect(self, y):
         """
@@ -139,21 +140,27 @@ class BasicChain(Chain):
 
         return None
 
-    bypass_cfo_estimation = True
+    bypass_cfo_estimation = False
 
     def cfo_estimation(self, y):
         """
         Estimates CFO using Moose algorithm, on first samples of preamble.
         """
-        # TO DO: extract 2 blocks of size N*R at the start of y
-
-        # TO DO: apply the Moose algorithm on these two blocks to estimate the CFO
-
-        cfo_est = 0  # Default value, to change
-
+        N = 2 #Can compute cfo<= B/2N =12500
+        R = self.osr_rx
+        Nt=N*R
+        sum1=0
+        T=1/self.bit_rate
+    
+        for k in range(0,Nt):
+            sum1+=y[k+Nt]*y[k].conjugate()
+        
+        cfo_est = np.angle(sum1)/(2*np.pi*Nt*T/R)
+        
+    
         return cfo_est
 
-    bypass_sto_estimation = True
+    bypass_sto_estimation = False
 
     def sto_estimation(self, y):
         """
@@ -187,13 +194,19 @@ class BasicChain(Chain):
         # Group symbols together, in a matrix. Each row contains the R samples over one symbol period
         y = np.resize(y, (nb_syms, R))
 
-        # TO DO: generate the reference waveforms used for the correlation
-        # hint: look at what is done in modulate() in chain.py
+        df = self.freq_dev
+        T = 1/self.bit_rate
 
-        # TO DO: compute the correlations with the two reference waveforms (r0 and r1)
+        n = np.arange(0,R)
+        signal = np.zeros(nb_syms, dtype=int)
 
-        # TO DO: performs the decision based on r0 and r1
+        for k in range(nb_syms):
+            r1=np.sum(y[k]*np.exp(-1j*2*np.pi*df*n*T/R))
+            r0=np.sum(y[k]*np.exp(1j*2*np.pi*df*n*T/R))
 
-        bits_hat = np.zeros(nb_syms, dtype=int)  # Default value, all bits=0. TO CHANGE!
+            if abs(r1)>abs(r0):
+                signal[k]=1
+            else:
+                signal[k]=0
 
-        return bits_hat
+        return signal
