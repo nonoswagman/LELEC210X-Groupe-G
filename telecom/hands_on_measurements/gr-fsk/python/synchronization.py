@@ -27,7 +27,14 @@ def cfo_estimation(y, B, R, Fdev):
     """
     Estimate CFO using Moose algorithm, on first samples of preamble
     """
-    return 0.0  # TODO
+    N = 2
+    Nt = N*R
+    sum1 = 0
+    T = 1/B
+    for k in range (0 , Nt) :
+        sum1 += y [k + Nt] * y [k].conjugate()
+    cfo_est = np.phase ( sum1 ) / ( 2 * np . pi * Nt * T / R )
+    return cfo_est
 
 
 def sto_estimation(y, B, R, Fdev):

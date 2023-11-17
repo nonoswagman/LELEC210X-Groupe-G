@@ -27,10 +27,20 @@ def demodulate(y, B, R, Fdev):
     """
     Non-coherent demodulator.
     """
-    nb_syms = int(len(y) / R)
-    bits_hat = np.zeros(nb_syms, dtype=int)
-    return bits_hat  # TODO
+    nb_syms = len ( y ) // R
+    y = np . resize (y , ( nb_syms , R ) )
+    df = Fdev
+    T = 1 / B
+    signal = np . zeros ( nb_syms , dtype = int )
 
+    for k in range ( nb_syms ) :
+        r1 = np . sum ( y [ k ] * np . exp ( - 1j * 2 * np . pi * df * n * T / R ) )
+        r0 = np . sum ( y [ k ] * np . exp ( 1j * 2 * np . pi * df * n * T / R ) )
+        if ( abs ( r1 ) > abs ( r0 ) ) :
+            signal [ k ] = 1
+        else :
+            signal [ k ] = 0
+    return signal
 
 class demodulation(gr.basic_block):
     """

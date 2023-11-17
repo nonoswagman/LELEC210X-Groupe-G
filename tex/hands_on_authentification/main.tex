@@ -1,6 +1,12 @@
 \documentclass[a4paper,11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\usepackage{footnote}
+\makesavenoteenv{tabular}
 \usepackage{amsmath}
 \usepackage{mathtools}
 \usepackage{amsfonts}
@@ -41,49 +47,47 @@
 \usepackage{fancybox}
 \usepackage[tikz]{bclogo}
 
+\newcommand{\algorithmautorefname}{Algorithm}
 
 
 %For code insertion
-%listing
 \usepackage{listings}
-\usepackage{xcolor}
-\definecolor{codegreen}{rgb}{0,0.6,0}
-\definecolor{codegray}{rgb}{0.5,0.5,0.5}
-\definecolor{codepurple}{rgb}{0.58,0,0.82}
-\definecolor{backcolour}{rgb}{0.98,0.98,0.98}
-\lstdefinestyle{mystyle}{
-    backgroundcolor=\color{backcolour},
-    commentstyle=\color{codegreen},
-    keywordstyle=\color{blue},
-    numberstyle=\tiny\color{codegray},
-    stringstyle=\color{codepurple},
-    basicstyle=\ttfamily\footnotesize,
-    breakatwhitespace=false,
-    breaklines=true,
-    captionpos=b,
-    keepspaces=true,
-    numbers=left,
-    numbersep=5pt,
-    showspaces=false,
-    showstringspaces=false,
-    showtabs=false,
-    tabsize=2
+\lstdefinestyle{customc}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=L,
+  xleftmargin=\parindent,
+  language=C,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{green!40!black},
+  commentstyle=\itshape\color{purple!40!black},
+  identifierstyle=\color{blue},
+  stringstyle=\color{orange},
 }
-\lstset{style=mystyle}
 
+\lstdefinestyle{customasm}{
+  belowcaptionskip=1\baselineskip,
+  frame=L,
+  xleftmargin=\parindent,
+  language=[x86masm]Assembler,
+  basicstyle=\footnotesize\ttfamily,
+  commentstyle=\itshape\color{purple!40!black},
+}
+
+\lstset{escapechar=@,style=customc}
+%End for code insertion
 
 
 \graphicspath{{figures/}}
 \sectionfont{\large}
 \subsectionfont{\normalsize}
 
-
-
 %%%%%%%%%%%%%%%%%%%
 % HANDS-ON NUMBER
-\newcommand\handsOnN{FPGA}
+\newcommand\handsOnN{5}
 % WEEK NUMBER
-\newcommand\weekN{8}
+\newcommand\weekN{9}
 %%%%%%%%%%%%%%%%%%%
 
 \newpagestyle{main}{
@@ -93,7 +97,7 @@
 }
 
 \newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
-%\setlength {\marginparwidth }{2cm}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
@@ -105,23 +109,21 @@
 \newpage \clearpage
 
 \begin{center}
-\begin{LARGE}
-LELEC2102: Hands-on FPGA
-\end{LARGE}
+\begin{huge}
+Hands-On \handsOnN: Authenticated communication with AES-based CBC-MAC\\
+\end{huge}
 \vspace{0.3cm}
 %\textit{TA 1, TA 2}
 \end{center}
 
-\input{introduction.tex}
-\input{objectives.tex}
-%\input{material}
-\input{core_preamble_detect.tex}
+\input{introduction}
+\input{objectives}
+\input{material}
 \input{core}
-\input{report.tex}
-\newpage
-\input{configuration}
-
+\input{demo}
+%\input{report} %Report guidelines are moved to Moodle only
 
 
 \end{document}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
