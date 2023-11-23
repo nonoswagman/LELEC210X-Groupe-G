@@ -39,7 +39,7 @@ void tag_cbc_mac(uint8_t *tag, const uint8_t *msg, size_t msg_len) {
     {
     	tag[j] = s[j]^msg[16*nb_block+j];
     }
-    AES128_encrypt(tag, AES-Key);
+    AES128_encrypt(tag, AES_Key);
 }
 
 // Assumes payload is already in place in the packet
