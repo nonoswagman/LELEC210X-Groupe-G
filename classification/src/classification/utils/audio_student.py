@@ -68,7 +68,9 @@ class AudioUtil:
         """
         sig, sr = audio
 
-        ### TO COMPLETE
+        K = sr//newsr
+
+        resig = signal.resample(sig, len(sig)//K)
 
         return (resig, newsr)
 
@@ -197,10 +199,15 @@ class AudioUtil:
         :param Nft: The number of points of the FFT.
         :param fs2: The sampling frequency.
         """
+        sig, _ = audio
 
-        ### TO COMPLETE
-        # stft /= float(2**8)
-        return stft
+        "Crop the signal such that its length is a multiple of Nft"
+        L = len(sig)
+        sig= sig[: L - L % Nft]
+
+        stft = librosa.stft(sig, n_fft=Nft, hop_length=Nft, window="hamm", center="False")
+
+        return np.abs(stft[:, : Nft//2])
 
     def get_hz2mel(fs2=11025, Nft=512, Nmel=20) -> ndarray:
         """
@@ -211,7 +218,7 @@ class AudioUtil:
         :param Nmel: The number of mel bands.
         """
         mels = librosa.filters.mel(sr=fs2, n_fft=Nft, n_mels=Nmel)
-        mels = mels[:, :-1]
+        # mels = mels[:, :-1]
         mels = mels / np.max(mels)
 
         return mels
@@ -227,6 +234,10 @@ class AudioUtil:
         """
 
         ### TO COMPLETE
+        mels = AudioUtil.get_hz2mel(fs2, Nft, Nmel)
+        stft = AudioUtil.specgram(audio, Nft, fs2)
+
+        melspec = mels @ stft #  Perform the matrix multiplication between the Hz2Mel matrix and stft.
 
         return melspec
 

@@ -31,8 +31,7 @@ def show_confusion_matrix(y_predict, y_true2, classnames, title=""):
     #     labels[mask] = mode(y_true2[mask])[0]
 
     confmat = confusion_matrix(
-        y_true2, y_predict, labels=np.arange(np.max(y_true2) + 1)
-    )
+        y_true2, y_predict)#, labels=np.arange(np.max(y_true2) + 1))
     heatmap(
         confmat.T,
         square=True,
