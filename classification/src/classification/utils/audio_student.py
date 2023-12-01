@@ -125,10 +125,9 @@ class AudioUtil:
         :param scaling_limit: The maximum scaling factor.
         """
         sig, sr = audio
+        scaling = random.uniform(0,scaling_limit)
 
-        ### TO COMPLETE
-
-        return audio
+        return (sig*scaling, sr)
 
     def add_noise(audio, sigma=0.05) -> Tuple[ndarray, int]:
         """
@@ -139,9 +138,9 @@ class AudioUtil:
         """
         sig, sr = audio
 
-        ### TO COMPLETE
+        noise = np.random.normal(0, sigma, sig.shape)
 
-        return audio
+        return (sig+noise, sr)
 
     def echo(audio, nechos=2) -> Tuple[ndarray, int]:
         """
@@ -332,11 +331,14 @@ class Feature_vector_DS:
                     amplitude_limit=0.1,
                 )
             if "echo" in self.data_aug:
-                aud = AudioUtil.add_echo(aud)
+                aud = AudioUtil.echo(aud)
             if "noise" in self.data_aug:
                 aud = AudioUtil.add_noise(aud, sigma=0.05)
             if "scaling" in self.data_aug:
                 aud = AudioUtil.scaling(aud, scaling_limit=5)
+            if "time_shift" in self.data_aug:
+                aud = AudioUtil.time_shift(aud)
+
 
         # aud = AudioUtil.normalize(aud, target_dB=10)
         aud = (aud[0]/np.max(np.abs(aud[0])), aud[1])
