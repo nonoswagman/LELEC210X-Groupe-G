@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import serial
 from serial.tools import list_ports
+import pickle
 
 from classification.utils.plots import plot_specgram
 
@@ -65,6 +66,11 @@ if __name__ == "__main__":
 
     else:
         input_stream = reader(port=args.port)
+        model_knn = pickle.load(open("D:/vince/Documents/LEPL/MASTER1Q1/LELEC210X-Groupe-G/classification/data/models/model.pickle", 'rb')) # Write your path to the model here!
+        print(model_knn.classes_)
+        
+        normalize = True
+        pca=True
         msg_counter = 0
 
         for melvec in input_stream:
@@ -72,6 +78,9 @@ if __name__ == "__main__":
 
             print("MEL Spectrogram #{}".format(msg_counter))
 
+            print(f"Class predicted: {model_knn.predict((melvec.reshape(1, -1))/np.linalg.norm((melvec.reshape(1, -1))))}")
+            print( model_knn.predict_proba((melvec.reshape(1, -1))/np.linalg.norm((melvec.reshape(1, -1)))))
+            
             plt.figure()
             plot_specgram(melvec.reshape((N_MELVECS, MELVEC_LENGTH)).T, ax=plt.gca(), is_mel=True, title="MEL Spectrogram #{}".format(msg_counter), xlabel="Mel vector")
             plt.draw()

@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "stm32l4xx_hal.h": "c",
+        "main.h": "c",
+        "aes_ref.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled",
+    "terminal.integrated.commandsToSkipShell": [
+        "\"python.terminal.activateEnvironment\": \"C:\\\\Users\\\\vince\\\\AppData\\\\Roaming\\\\Python\\\\Scripts\\\\activate\""
+    ]
+}

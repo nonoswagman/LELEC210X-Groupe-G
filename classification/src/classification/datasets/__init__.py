@@ -32,7 +32,7 @@ class Dataset:
         """
         files = {}
 
-        for file in folder.glob("**/*." + format):
+        for file in sorted(folder.glob("**/*." + format)):
             cls = get_cls_from_path(file)
             files.setdefault(cls, []).append(file)
 
