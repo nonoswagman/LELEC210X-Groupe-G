@@ -201,12 +201,25 @@ class AudioUtil:
         sig, _ = audio
 
         "Crop the signal such that its length is a multiple of Nft"
+        # L = len(sig)
+        # sig= sig[: L - L % Nft]
+
+        # stft = librosa.stft(sig, n_fft=Nft, hop_length=Nft, window="hamm", center="False")
+
+        # return np.abs(stft[:, : Nft//2])
+    
+        # Homemade computation of stft
+        "Crop the signal such that its length is a multiple of Nft"
         L = len(sig)
-        sig= sig[: L - L % Nft]
+        sig = sig[: L - L % Nft]
 
-        stft = librosa.stft(sig, n_fft=Nft, hop_length=Nft, window="hamm", center="False")
+        "Reshape the signal with a piece for each row"
+        audiomat = np.reshape(sig, (L // Nft, Nft))
+        audioham = audiomat * np.hamming(Nft)  # Windowing. Hamming, Hanning, Blackman,..
 
-        return np.abs(stft[:, : Nft//2])
+        "FFT row by row"
+        stft = np.fft.fft(audioham, axis=1)
+        return np.abs(stft[:, : Nft // 2]).T  # Taking only positive frequencies and computing the magnitude
 
     def get_hz2mel(fs2=11025, Nft=512, Nmel=20) -> ndarray:
         """
@@ -217,7 +230,7 @@ class AudioUtil:
         :param Nmel: The number of mel bands.
         """
         mels = librosa.filters.mel(sr=fs2, n_fft=Nft, n_mels=Nmel)
-        # mels = mels[:, :-1]
+        mels = mels[:, :-1]
         mels = mels / np.max(mels)
 
         return mels
@@ -236,7 +249,7 @@ class AudioUtil:
         mels = AudioUtil.get_hz2mel(fs2, Nft, Nmel)
         stft = AudioUtil.specgram(audio, Nft, fs2)
 
-        melspec = mels @ stft #  Perform the matrix multiplication between the Hz2Mel matrix and stft.
+        melspec = np.dot(mels, stft) #  Perform the matrix multiplication between the Hz2Mel matrix and stft.
 
         return melspec
 
