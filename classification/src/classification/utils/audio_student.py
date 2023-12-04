@@ -105,7 +105,7 @@ class AudioUtil:
 
         return (sig, sr)
 
-    def time_shift(audio, shift_limit=0.4) -> Tuple[ndarray, int]:
+    def time_shift(audio, shift_limit=0.4, rand=True) -> Tuple[ndarray, int]:
         """
         Shifts the signal to the left or right by some percent. Values at the end are 'wrapped around' to the start of the transformed signal.
 
@@ -114,7 +114,10 @@ class AudioUtil:
         """
         sig, sr = audio
         sig_len = len(sig)
-        shift_amt = int(random.random() * shift_limit * sig_len)
+        if rand:
+            shift_amt = int(random.random() * shift_limit * sig_len)
+        else:
+            shift_amt = int(shift_limit * sig_len)
         return (np.roll(sig, shift_amt), sr)
 
     def scaling(audio, scaling_limit=5) -> Tuple[ndarray, int]:
@@ -332,7 +335,7 @@ class Feature_vector_DS:
         audio_file = self.dataset[cls_index] 
         aud = AudioUtil.open(audio_file)
         aud = AudioUtil.resample(aud, self.sr)
-        aud = AudioUtil.time_shift(aud, self.shift_pct)
+        aud = AudioUtil.time_shift(aud, self.shift_pct, False)
         aud = AudioUtil.pad_trunc(aud, self.duration)
         if self.data_aug is not None:
             if "add_bg" in self.data_aug:
