@@ -46,7 +46,7 @@ def reader(port=None):
 
             yield buffer_array
 
-                  
+
 if __name__ == "__main__":
     argParser = argparse.ArgumentParser()
     argParser.add_argument("-p", "--port", help="Port for serial communication")
@@ -82,7 +82,13 @@ if __name__ == "__main__":
             print( model_knn.predict_proba((melvec.reshape(1, -1))/np.linalg.norm((melvec.reshape(1, -1)))))
             
             plt.figure()
-            plot_specgram(melvec.reshape((N_MELVECS, MELVEC_LENGTH)).T, ax=plt.gca(), is_mel=True, title="MEL Spectrogram #{}".format(msg_counter), xlabel="Mel vector")
+            plot_specgram(
+                melvec.reshape((N_MELVECS, MELVEC_LENGTH)).T,
+                ax=plt.gca(),
+                is_mel=True,
+                title="MEL Spectrogram #{}".format(msg_counter),
+                xlabel="Mel vector",
+            )
             plt.draw()
             plt.pause(0.001)
             plt.clf()
