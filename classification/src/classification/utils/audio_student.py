@@ -7,6 +7,7 @@ import numpy as np
 import sounddevice as sd
 import soundfile as sf
 from numpy import ndarray
+from scipy import signal
 from scipy.signal import fftconvolve
 
 # -----------------------------------------------------------------------------
@@ -393,7 +394,7 @@ class Feature_vector_DS:
         :param cls_index: Class name and index.
         """
         audio = self.get_audiosignal(cls_index)
-        AudioUtil.play(audio)
+        # AudioUtil.play(audio)
         plt.figure(figsize=(4, 3))
         plt.imshow(
             AudioUtil.melspectrogram(audio, Nmel=self.nmel, Nft=self.Nft),
@@ -418,3 +419,7 @@ class Feature_vector_DS:
             self.data_aug_factor += len(self.data_aug)
         else:
             self.data_aug = [self.data_aug]
+
+    def play_sound(self, cls_index):
+        audio = self.get_audiosignal(cls_index)
+        AudioUtil.play(audio)
