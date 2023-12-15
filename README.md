@@ -1,7 +1,3 @@
-> **IMPORTANT:** this README (and repository) is currently "work in progress",
-> so some information might not be up to date, or some files might still need
-> to be pushed to this repository.
-
 # LELEC210x project
 
 This repository contains every thing you (student) need for the LELEC210x project.
@@ -20,6 +16,8 @@ Subdirectories are organized as follows:
 
 - [`auth/`](auth/):
   hands-on related to the authentification part.
+- [`common/`](common/):
+  shared tools across different parts.
 - [`classification/`](classification/):
   hands-on related to the classification part.
 - [`fpga`](fpga/):
@@ -165,4 +163,4 @@ to format staged files, before committing them.
 
 ## 4. Building the whole project
 
-TODO
+See [INTEGRATION](INTEGRATION.md).
